@@ -1,1 +1,1 @@
-poetry add fastapi alembic sqlalchemy asyncpg
+poetry add fastapi alembic sqlalchemy asyncpg uvicorn
