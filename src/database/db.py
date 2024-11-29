@@ -1,11 +1,7 @@
 import contextlib
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase
-
 from lesson2.src.conf.config import config
 
-class Base(DeclarativeBase):
-    pass
 
 
 class DatabaseSessionManager:
@@ -16,18 +12,18 @@ class DatabaseSessionManager:
             autocommit=False,
             bind=self._engine
         )
-        @contextlib.asynccontextmanager
-        async def session(self):
-            if self._session_maker is None:
-                raise Exception ('Session is not initialized')
-            session = self._session_maker()
-            try:
-                yield session
-            except Exception as err:
-                print(err)
-                await session.rollback()
-            finally:
-                await session.close()
+    @contextlib.asynccontextmanager
+    async def session(self):
+        if self._session_maker is None:
+            raise Exception ('Session is not initialized')
+        session = self._session_maker()
+        try:
+            yield session
+        except Exception as err:
+            print(err)
+            await session.rollback()
+        finally:
+            await session.close()
 
 sessionmanager = DatabaseSessionManager(config.DB_URL)
 
