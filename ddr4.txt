@@ -1,0 +1,1 @@
+poetry add fastapi alembic sqlalchemy asyncpg
