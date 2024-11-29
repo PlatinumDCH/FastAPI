@@ -19,3 +19,25 @@ poetry add fastapi alembic sqlalchemy asyncpg uvicorn
      HTTP метод Delete HTTP 200 (ок)  HTTP 204 (no content)
 
 
+Коди ответов HTTP
+    информационные 100 - 199
+        100: Continue
+    успешные 200 - 299
+        200: ok
+        201: created
+        202: accepted
+        204: no content
+    перенаправление 300-399
+        301:Moved Permanently
+        307: Temporary Redirect
+    клиентские ошибки 400-499
+         400:Bad Content
+         401:Unauthorized
+         403:Forbidden
+         404:Not Found
+    Серверные ошибки 500-599
+         500: Internal Server Error
+         501: Not Implemented
+         502: Bad Gateway
+         503: Service Unavailable
+         504: Gateway Timeout
