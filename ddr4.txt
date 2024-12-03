@@ -54,16 +54,25 @@ alembic:
             jwt (json web token) }
 
 poetry add 'python-jose[cryptography]'
-обновил модельки
-    добавил модель User     __tablename__ = 'users'
-                            id: int
-                            username: str
-                            email: srt
-                            password:str
-                            avatar: str
-                            refresh_token: str
-    обновил модель todo
-        created_ad
-        updated_ad
-        user,
-        user_id
+
+user -> login        -> server login:email.pass
+user <- access token <- server
+       refresh token
+
+user бегает к серверу с  access token, через 10-15 минут access token притухает и user идет на refresh token
+и просим новую пару access token  refresh token
+
+user -> refresh token    -> server
+user <- new access token <- server
+       refresh token
+когда серверу возвращают  refresh token мы можем его обновлять а может и не обновлять все зависит от того
+какой логику поведения мы хотим предпринять
+если часто заходить на условный сайт он почти никогда не просит ввести логин и пароль
+(потом введем юзеров в роуты)
+но если я хочу четко чтоб через месяц пользователь обязательно ввел логин и пароль тогда я refresh token не обновляю
+и прислаю полюзовалю оди и тотже и через месяц ( рефреш токен живет месяц )
+и через месяц ты введешь логин и пароль
+если польщователь ходит кождый день, чтоб не завставлять вводить логин и пароль я постоянно рефреш токен обновляю
+и это рефреш токен постоянно жиет месяц, вперед
+но если не захожить на сайт целый месяц, то через месяц ты введешь логин и пароль
+
