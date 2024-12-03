@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from src.database.db import get_db
 from src.repository import users as repositories_users
-from src.schemas.todo import UserSchema, TokenShema, UserResponse
+from src.schemas.user import UserSchema, TokenSchema, UserResponse
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
