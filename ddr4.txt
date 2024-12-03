@@ -18,7 +18,7 @@ poetry add fastapi alembic sqlalchemy asyncpg uvicorn
                                                  HTTP 204  - если не было передано какой-то контент в теле ответа
      HTTP метод Delete HTTP 200 (ок)  HTTP 204 (no content)
 
-
+-
 Коди ответов HTTP
     информационные 100 - 199
         100: Continue
@@ -41,3 +41,29 @@ poetry add fastapi alembic sqlalchemy asyncpg uvicorn
          502: Bad Gateway
          503: Service Unavailable
          504: Gateway Timeout
+alembic:
+    go to root path
+    alembic init <name folder for migrations>
+    alembic revision --autogenerate -m 'Init'
+
+запуск сервера uvicorn main:app --reload
+
+авторизация
+           { keycloak - сторонний сервер
+            amazon cognito - сторонний сервер
+            jwt (json web token) }
+
+poetry add 'python-jose[cryptography]'
+обновил модельки
+    добавил модель User     __tablename__ = 'users'
+                            id: int
+                            username: str
+                            email: srt
+                            password:str
+                            avatar: str
+                            refresh_token: str
+    обновил модель todo
+        created_ad
+        updated_ad
+        user,
+        user_id

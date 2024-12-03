@@ -1,21 +1,33 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from lesson2.src.database.db import get_db
-from lesson2.src.routes import todos
 
-app=FastAPI()
+from src.database.db import get_db
+from src.routes import todos
 
-app.include_router(todos.router, prefix='/api')
+app = FastAPI()
 
-@app.get('/')
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(todos.router, prefix="/api")
+
+
+@app.get("/")
 def index():
-    return {
-        'message':'Todo Application'
-    }
+    return {"message": "Todo Application"}
+
 
 @app.get("/api/healthchecker")
-async def  healthchecker(db: AsyncSession = Depends(get_db)):
+async def healthchecker(db: AsyncSession = Depends(get_db)):
     try:
         # Make request
         result = await db.execute(text("SELECT 1"))
