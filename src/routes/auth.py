@@ -19,11 +19,30 @@ async def signup(body: UserSchema, db:AsyncSession=Depends(get_db)):
     new_user = await repositories_users.create_user(body, db)
     return new_user
 
-@router.post('/login')
+@router.post('/login', response_model=TokenSchema)
 async def login(body: OAuth2PasswordRequestForm=Depends(),
                 db:AsyncSession=Depends(get_db)):
-    pass
-    return {}
+    user = await repositories_users.get_user_by_email(body.username, db) #username - email
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid email')
+    if not auth_service.verify_password(body.password, user.password):
+        raise  HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid password')
+    #generate jwt
+    access_token = await auth_service.create_access_token(
+        data={
+            'sub':user.email,
+            'test':'test_test'
+        }
+    )
+    refresh_token = await auth_service.create_refresh_token(
+        data={
+            'sub':user.email
+        }
+    )
+    await repositories_users.update_token(user, refresh_token, db)
+    return {'access_token':access_token,
+            'refresh_token':refresh_token,
+            'token_type':'bearer'}
 
 @router.get('/refresh_token')
 async def refresh_token(credentials:HTTPAuthorizationCredentials=Security(),
