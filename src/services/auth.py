@@ -47,9 +47,20 @@ class Auth:
         return encoded_assess_token
 
     async def create_refresh_token(self, data:dict, expires_delta:Optional[float]=None):
-        """Создает refresh_token,
-        формирует долгий срок для пароля"""
-        ...
+        """Формирует долгий срок для пароля"""
+        to_encode = data.copy()
+        if expires_delta:
+            expire = datetime.utcnow() + timedelta(seconds=expires_delta)
+        else:
+            expire = datetime.utcnow() + timedelta(days=7)
+        to_encode.update(
+            {'iat':datetime.utcnow(), #кода мы создали токен
+             'exp':expire,            #сколько он будет жить
+             'scope':'refresh_token'}  #это значит что это именно refresh_token
+                         )
+        encoded_refresh_token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
+        return encoded_refresh_token
+
     async def decode_refresh_token(self, refresh_token:str):
         """для декодирования refresh_token"""
         ...
