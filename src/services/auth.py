@@ -20,3 +20,5 @@ class Auth:
         return self.pwd_context.verify(plain_password, hashed_password)
     def get_password(self, password:str):
         return self.pwd_context.hash(password)
+
+    auth2_scheme = OAuth2PasswordBearer(tokenUrl='api/auth/login')
