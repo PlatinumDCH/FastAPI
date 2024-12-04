@@ -18,7 +18,43 @@ class Auth:
     ALGORITHM = 'HS256'
     def verify_password(self, plain_password, hashed_password):
         return self.pwd_context.verify(plain_password, hashed_password)
-    def get_password(self, password:str):
+    def get_password_hash(self, password:str):
         return self.pwd_context.hash(password)
 
     auth2_scheme = OAuth2PasswordBearer(tokenUrl='api/auth/login')
+
+
+    async def create_access_token(self, data:dict, expires_delta: Optional[float]=None):
+        """
+        формирует короткий срок для пароля
+        :param data
+                        {sub": "1234567890",
+                        "name": "John Doe",
+                        "iat": 1516239022}
+        :param expires_delta - можно вручную задать время жизни токена в секундах
+        """
+        to_encode = data.copy()
+        if expires_delta:
+            expire = datetime.utcnow() + timedelta(seconds=expires_delta)
+        else:
+            expire = datetime.utcnow() + timedelta(minutes=15)
+        to_encode.update(
+            {'iat':datetime.utcnow(), #кода мы создали токен
+             'exp':expire,            #сколько он будет жить
+             'scope':'access_token'}  #это значит что это именно access_token
+                         )
+        encoded_assess_token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
+        return encoded_assess_token
+
+    async def create_refresh_token(self, data:dict, expires_delta:Optional[float]=None):
+        """Создает refresh_token,
+        формирует долгий срок для пароля"""
+        ...
+    async def decode_refresh_token(self, refresh_token:str):
+        """для декодирования refresh_token"""
+        ...
+    async def get_current_user(self, token:str=Depends(auth2_scheme),db:AsyncSession=Depends(get_db)):
+        """Вытащить из базы данных пользователя из бд чей токен пришел
+        приходит токен jwt on server
+        эта функция разбирает этот токен и возвращаем пользователя с бд"""
+        ...
