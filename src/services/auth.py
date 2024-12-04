@@ -95,7 +95,7 @@ class Auth:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             if payload['scope'] == 'access_token':
                 email=payload['sub'] #subject
-                if email in None:
+                if email is None:
                     raise credentials_exception
             else:
                 return credentials_exception
