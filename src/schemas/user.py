@@ -9,7 +9,7 @@ class UserSchema(BaseModel):
 class UserResponse(BaseModel):
     id: int = 1
     username: str
-    email: str
+    email: EmailStr
     avatar: str
 
     class Config:
