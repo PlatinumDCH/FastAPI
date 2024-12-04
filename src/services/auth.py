@@ -7,6 +7,8 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import JWTError, jwt
 from starlette import status
+import pytz
+
 
 from src.database.db import get_db
 from src.repository import users as repository_users
@@ -34,10 +36,11 @@ class Auth:
         :param expires_delta - можно вручную задать время жизни токена в секундах
         """
         to_encode = data.copy()
+        utc_now = datetime.now(pytz.UTC)
         if expires_delta:
-            expire = datetime.utcnow() + timedelta(seconds=expires_delta)
+            expire = utc_now + timedelta(seconds=expires_delta)
         else:
-            expire = datetime.utcnow() + timedelta(minutes=15)
+            expire = utc_now + timedelta(minutes=15)
         to_encode.update(
             {'iat':datetime.utcnow(), #кода мы создали токен
              'exp':expire,            #сколько он будет жить
@@ -49,10 +52,11 @@ class Auth:
     async def create_refresh_token(self, data:dict, expires_delta:Optional[float]=None):
         """Формирует долгий срок для пароля"""
         to_encode = data.copy()
+        utc_now = datetime.now(pytz.UTC)
         if expires_delta:
-            expire = datetime.utcnow() + timedelta(seconds=expires_delta)
+            expire = utc_now + timedelta(seconds=expires_delta)
         else:
-            expire = datetime.utcnow() + timedelta(days=7)
+            expire = utc_now + timedelta(days=7)
         to_encode.update(
             {'iat':datetime.utcnow(), #кода мы создали токен
              'exp':expire,            #сколько он будет жить
