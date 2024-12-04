@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Path, Query, Security
-from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredentials
+from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
@@ -9,6 +9,7 @@ from src.schemas.user import UserSchema, TokenSchema, UserResponse
 from src.services.auth import auth_service
 
 router = APIRouter(prefix='/auth', tags=['auth'])
+get_refresh_token = HTTPBearer()
 
 @router.post('/signup', response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def signup(body: UserSchema, db:AsyncSession=Depends(get_db)):
