@@ -20,6 +20,7 @@ pathlib = {extras = ["context"], version = "^1.0.1"}
 libgravatar = "^1.0.4"
 passlib = "^1.7.4"
 bcrypt = "^4.2.1"
+pytz = "^2024.2"
 
 
 [build-system]
