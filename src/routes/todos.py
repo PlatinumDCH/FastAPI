@@ -2,13 +2,14 @@ from fastapi import APIRouter, HTTPException, Depends, status, Path, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.db import get_db
-from src.entity.models import User
+from src.entity.models import User, Role
 from src.repository import todos as repositories_todos
 from src.schemas.todo import TodoSchema, TodoUpdateSchema, TodoResponse
 from src.services.auth import auth_service
+from src.services.roles import RoleAccess
 
 router = APIRouter(prefix='/todos', tags=['todos'])
-
+access_to_route_all = RoleAccess([Role.admin, Role.moderator])
 
 @router.get("/", response_model=list[TodoResponse])
 async def get_todos(limit: int = Query(10, ge=10, le=500), offset: int = Query(0, ge=0),
@@ -16,8 +17,8 @@ async def get_todos(limit: int = Query(10, ge=10, le=500), offset: int = Query(0
     todos = await repositories_todos.get_todos(limit, offset, db, user)
     return todos
 
-@router.get('/all', response_model=list[TodoResponse])
-async def get_todos(limit:int = Query(10, ge=10, le=500), offset: int = Query(0, ge=0),
+@router.get('/all', response_model=list[TodoResponse], dependencies=[Depends(access_to_route_all)] )
+async def get_all_todos(limit:int = Query(10, ge=10, le=500), offset: int = Query(0, ge=0),
                     db: AsyncSession = Depends(get_db), user:User = Depends(auth_service.get_current_user)):
     todos = await repositories_todos.get_todos_all(limit, offset, db)
     return todos
