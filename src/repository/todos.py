@@ -6,19 +6,19 @@ from src.schemas.todo import TodoSchema, TodoUpdateSchema
 
 
 async def get_todos(limit: int, offset: int, db: AsyncSession, user: User):
-    stmt = select(Todo).offset(offset).limit(limit)
+    stmt = select(Todo).filter_by(user=User).offset(offset).limit(limit)
     todos = await db.execute(stmt)
     return todos.scalars().all()
 
 
 async def get_todo(todo_id: int, db: AsyncSession, user: User):
-    stmt = select(Todo).filter_by(id=todo_id)
+    stmt = select(Todo).filter_by(id=todo_id, user=user)
     todo = await db.execute(stmt)
     return todo.scalar_one_or_none()
 
 
 async def create_todo(body: TodoSchema, db: AsyncSession, user: User):
-    todo = Todo(**body.model_dump(exclude_unset=True))  # (title=body.title, description=body.description)
+    todo = Todo(**body.model_dump(exclude_unset=True), user=user)  # (title=body.title, description=body.description)
     db.add(todo)
     await db.commit()
     await db.refresh(todo)
@@ -26,7 +26,7 @@ async def create_todo(body: TodoSchema, db: AsyncSession, user: User):
 
 
 async def update_todo(todo_id: int, body: TodoUpdateSchema, db: AsyncSession, user:User):
-    stmt = select(Todo).filter_by(id=todo_id)
+    stmt = select(Todo).filter_by(id=todo_id, user=user)
     result = await db.execute(stmt)
     todo = result.scalar_one_or_none()
     if todo:
@@ -39,7 +39,7 @@ async def update_todo(todo_id: int, body: TodoUpdateSchema, db: AsyncSession, us
 
 
 async def delete_todo(todo_id: int, db: AsyncSession, user: User):
-    stmt = select(Todo).filter_by(id=todo_id)
+    stmt = select(Todo).filter_by(id=todo_id, user=user)
     todo = await db.execute(stmt)
     todo = todo.scalar_one_or_none()
     if todo:
