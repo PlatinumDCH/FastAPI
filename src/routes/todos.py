@@ -16,18 +16,23 @@ async def get_todos(limit: int = Query(10, ge=10, le=500), offset: int = Query(0
     todos = await repositories_todos.get_todos(limit, offset, db, user)
     return todos
 
+@router.get('/all', response_model=list[TodoResponse])
+async def get_todos(limit:int = Query(10, ge=10, le=500), offset: int = Query(0, ge=0),
+                    db: AsyncSession = Depends(get_db), user:User = Depends(auth_service.get_current_user)):
+    todos = await repositories_todos.get_todos_all(limit, offset, db)
+    return todos
+
+@router.post("/", response_model=TodoResponse, status_code=status.HTTP_201_CREATED)
+async def create_todo(body: TodoSchema, db: AsyncSession = Depends(get_db),user:User = Depends(auth_service.get_current_user)):
+    todo = await repositories_todos.create_todo(body, db, user)
+    return todo
+
 
 @router.get("/{todo_id}", response_model=TodoResponse)
 async def get_todo(todo_id: int = Path(ge=1), db: AsyncSession = Depends(get_db),user:User = Depends(auth_service.get_current_user)):
     todo = await repositories_todos.get_todo(todo_id, db, user)
     if todo is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="NOT FOUND")
-    return todo
-
-
-@router.post("/", response_model=TodoResponse, status_code=status.HTTP_201_CREATED)
-async def create_todo(body: TodoSchema, db: AsyncSession = Depends(get_db),user:User = Depends(auth_service.get_current_user)):
-    todo = await repositories_todos.create_todo(body, db, user)
     return todo
 
 
