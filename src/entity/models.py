@@ -44,4 +44,4 @@ class User(Base):
     created_at: Mapped[date] = mapped_column('created_at', DateTime, default=func.now())
     updated_at: Mapped[date] = mapped_column('updated_at', DateTime, default=func.now(),
                                              onupdate=func.now())
-    role: Mapped[Enum] = mapped_column('role', Enum(Role), default=Role.user)
+    role: Mapped[Enum] = mapped_column('role', Enum(Role), default=Role.user, nullable=True)
