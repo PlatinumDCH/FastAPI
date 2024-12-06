@@ -1,5 +1,8 @@
 from pydantic import BaseModel, EmailStr, Field
 
+from src.entity.models import Role
+
+
 class UserSchema(BaseModel):
     username:str = Field(min_length=3, max_length=50)
     email: EmailStr
@@ -10,7 +13,7 @@ class UserResponse(BaseModel):
     username: str
     email: EmailStr
     avatar: str
-
+    role: Role
     class Config:
         from_attributes = True
 
